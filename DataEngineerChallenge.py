@@ -14,14 +14,6 @@ def traverse_labyrinth(labyrinth, start, end):
     def is_valid(row, col):
         return row >= 0 and row < rows and col >= 0 and col < columns and labyrinth[row][col] == '.'
 
-    # Helper function to check if the platform can rotate at a specific position
-    def can_rotate(row, col):
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if not is_valid(row + i, col + j):
-                    return False
-        return True
-    
     # Helper function to reconstruct the path from start to end
     def reconstruct_path(parents, current):
         path = []
@@ -50,9 +42,9 @@ def traverse_labyrinth(labyrinth, start, end):
         for direction in directions:
             new_row = current[0] + direction[0]
             new_col = current[1] + direction[1]
+            new_pos = (new_row, new_col)
 
             if is_valid(new_row, new_col):
-                new_pos = (new_row, new_col)
                 g_score_new_pos = g_scores[current] + 1
                 if new_pos not in g_scores or g_score_new_pos < g_scores[new_pos]:
                     # Found a shorter path to this position
@@ -61,17 +53,6 @@ def traverse_labyrinth(labyrinth, start, end):
                     f_scores[new_pos] = g_score_new_pos + heuristic_distance(new_pos)
                     if (f_scores[new_pos], new_pos) not in open_set:
                         open_set.append((f_scores[new_pos], new_pos))
-        
-            if can_rotate(current[0], current[1]):
-                rotate_pos = (current[0], current[1])
-                g_score_rotate_pos = g_scores[current] + 1
-                if rotate_pos not in g_scores or g_score_rotate_pos < g_scores[rotate_pos]:
-                    # Found a shorter path to rotate at this position
-                    parents[rotate_pos] = current
-                    g_scores[rotate_pos] = g_score_rotate_pos
-                    f_scores[rotate_pos] = g_score_rotate_pos + heuristic_distance(rotate_pos)
-                    if (f_scores[rotate_pos], rotate_pos) not in open_set:
-                        open_set.append((f_scores[rotate_pos], rotate_pos))
 
     # No valid path found
     return [], -1
@@ -95,7 +76,7 @@ if total_steps == -1:
 else:
     print("Path found:")
     for row, col in path:
-        labyrinth[row][col] = 'O'
+        labyrinth[row][col] = 'X'
     for row in labyrinth:
         print(' '.join(row))
     print("Total steps:", total_steps)
