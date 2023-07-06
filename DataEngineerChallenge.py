@@ -66,8 +66,9 @@ labyrinth = [
     ['.', '#', '.', '.', '.', '.', '.', '#', '.']
 ]
 
+rod = (0,2)
 start = (0, 0)
-end = (4, 8)
+end = (3, 8)
 
 path, total_steps = traverse_labyrinth(labyrinth, start, end)
 
@@ -76,7 +77,7 @@ if total_steps == -1:
 else:
     print("Path found:")
     for row, col in path:
-        labyrinth[row][col] = 'X'
+        labyrinth[row][col] = 'O'
     for row in labyrinth:
         print(' '.join(row))
     print("Total steps:", total_steps)
