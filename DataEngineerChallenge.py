@@ -1,79 +1,94 @@
-def traverse_labyrinth(labyrinth, start, end):
-    # Labyrinth dimensions
-    rows = len(labyrinth)
-    columns = len(labyrinth[0])
-    horizontal = True
+def recorrer_laberinto(laberinto, inicio, fin):
+    # Dimensiones del laberinto
+    filas = len(laberinto)
+    columnas = len(laberinto[0])
+    orientacion = True
 
-    # List of directions to move in the labyrinth (up, down, left, right)
-    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    # Lista de direcciones para moverse en el laberinto (arriba, abajo, izquierda, derecha)
+    direcciones = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-    # Helper function to calculate the heuristic distance (Manhattan distance)
-    def heuristic_distance(current_pos):
-        return abs(current_pos[0] - end[0]) + abs(current_pos[1] - end[1])
+    # Función auxiliar para calcular la distancia heurística (distancia Manhattan)
+    def distancia_heuristica(pos_actual):
+        return abs(pos_actual[0] - fin[0]) + abs(pos_actual[1] - fin[1])
 
-    def can_rotate(row, col,horizontal):
-        if (row-1 and col == '.') and (row+1 and col == '.') and (row and col-1 == '.') and (row and col+1 == '.') and (row-1 and col-1=='.') and (row+1 and col+1=='.') and (row-1 and col+1=='.') and (row+1 and col-1=='.'):
-            return not horizontal
-        else: 
-            return horizontal
+    def puede_rotar(fila, columna):
+        if (fila - 1 >= 0 and fila + 1 < filas and columna - 1 >= 0 and columna + 1 < columnas):
+            return (laberinto[fila][columna] == '.' and laberinto[fila - 1][columna] == '.' and laberinto[fila + 1][columna] == '.' and
+                    laberinto[fila][columna - 1] == '.' and laberinto[fila][columna + 1] == '.' and
+                    laberinto[fila - 1][columna - 1] == '.' and laberinto[fila - 1][columna + 1] == '.' and
+                    laberinto[fila + 1][columna - 1] == '.' and laberinto[fila + 1][columna + 1] == '.')
 
+        return False 
 
-    # Helper function to check if a position is within the labyrinth and is traversable
-    def is_valid(row, col, horizontal):
-        if (row >= 0 and row < rows and col >= 0 and col < columns and labyrinth[row][col] == '.' and horizontal):
-            return (row-1 and col == '.') and (row+1 and col == '.')
-        elif (row >= 0 and row < rows and col >= 0 and col < columns and labyrinth[row][col] == '.' and not horizontal):
-            return (row and col-1 == '.') and (row and col+1 == '.')
-        else:
-            return False
+    def es_valida(fila, columna):
+        return fila >= 0 and fila < filas and columna >= 0 and columna < columnas and laberinto[fila][columna] == '.'
 
+    def hay_camino_transitable(fila, columna, orientacion):
+        if orientacion:
+            return es_valida(fila, columna - 1) and es_valida(fila, columna + 1) and columna - 1 >= 0
 
-    # Helper function to reconstruct the path from start to end
-    def reconstruct_path(parents, current):
-        path = []
-        while current in parents:
-            path.append(current)
-            current = parents[current]
-        return list(reversed(path))
+        return es_valida(fila - 1, columna) and es_valida(fila + 1, columna) and fila - 1 >= 0
 
-    # Initialization
-    g_scores = {start: 0}
-    f_scores = {start: heuristic_distance(start)}
-    parents = {}
-    open_set = [(f_scores[start], start)]
+    def reconstruir_camino(padres, actual):
+        camino = []
+        while actual in padres:
+            camino.append(actual)
+            actual = padres[actual]
+        return list(reversed(camino))
+
+    # Inicialización
+    g_scores = {inicio: 0}
+    f_scores = {inicio: distancia_heuristica(inicio)}
+    padres = {}
+    open_set = [(f_scores[inicio], inicio)]
 
     while open_set:
-        _, current = min(open_set)
+        _, actual = min(open_set)
 
-        if current == end:
-            # Path has been found
-            path = reconstruct_path(parents, current)
-            total_steps = g_scores[current]
-            return path, total_steps
+        if actual == fin:
+            # Se ha encontrado el camino
+            camino = reconstruir_camino(padres, actual)
+            pasos_totales = g_scores[actual]
+            print(camino)
+            return camino, pasos_totales
 
-        open_set.remove((f_scores[current], current))
+        try:
+            open_set.remove((f_scores[actual], actual))
+        except KeyError:
+             return [], -1
 
-        for direction in directions:
-            new_row = current[0] + direction[0]
-            new_col = current[1] + direction[1]
-            new_pos = (new_row, new_col)
+        for direccion in direcciones:
+            nueva_fila = actual[0] + direccion[0]
+            nueva_columna = actual[1] + direccion[1]
+            nueva_pos = (nueva_fila, nueva_columna)
 
-            if is_valid(new_row, new_col, horizontal):
-                g_score_new_pos = g_scores[current] + 1
-                #horizontal= can_rotate(new_row,new_col,horizontal)
-                if new_pos not in g_scores or g_score_new_pos < g_scores[new_pos]:
-                    # Found a shorter path to this position
-                    parents[new_pos] = current
-                    g_scores[new_pos] = g_score_new_pos
-                    f_scores[new_pos] = g_score_new_pos + heuristic_distance(new_pos)
-                    if (f_scores[new_pos], new_pos) not in open_set:
-                        open_set.append((f_scores[new_pos], new_pos))
+            if es_valida(nueva_fila, nueva_columna) and hay_camino_transitable(nueva_fila, nueva_columna, orientacion):
+                g_score_nueva_pos = g_scores[actual] + 1
 
-    # No valid path found
+                if nueva_pos not in g_scores or g_score_nueva_pos < g_scores[nueva_pos]:
+                    padres[nueva_pos] = actual
+                    g_scores[nueva_pos] = g_score_nueva_pos
+                    f_scores[nueva_pos] = g_score_nueva_pos + distancia_heuristica(nueva_pos)
+
+                    if (f_scores[nueva_pos], nueva_pos) not in open_set:
+                        open_set.append((f_scores[nueva_pos], nueva_pos))
+
+        if orientacion and puede_rotar(actual[0], actual[1]):
+            orientacion = False
+            if puede_rotar(actual[0], actual[1]):
+                g_score_rotar = g_scores[actual] + 1
+                rotar_pos = (actual[0], actual[1])
+                padres[rotar_pos] = actual
+                g_scores[rotar_pos] = g_score_rotar
+                f_scores[rotar_pos] = g_score_rotar + distancia_heuristica(rotar_pos)
+                if (f_scores[rotar_pos], rotar_pos) not in open_set:
+                    open_set.append((f_scores[rotar_pos], rotar_pos))
+
+    # No se ha encontrado un camino
     return [], -1
 
-# Example usage
-labyrinth = [
+# Ejemplo de uso
+laberinto = [
     ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
     ['#', '.', '.', '.', '#', '.', '.', '.', '.'],
     ['.', '.', '.', '.', '#', '.', '.', '.', '.'],
@@ -81,16 +96,72 @@ labyrinth = [
     ['.', '#', '.', '.', '.', '.', '.', '#', '.']
 ]
 
-start = (0, 0)
-end = (4, 8)
+inicio = (0, 1)
+fin = (3, 8)
 
-path, total_steps = traverse_labyrinth(labyrinth, start, end)
+camino, pasos_totales = recorrer_laberinto(laberinto, inicio, fin)
 
-if total_steps == -1:
-    print(-1)
+if camino:
+    print("Se encontró un camino:")
+    for fila, columna in camino:
+        laberinto[fila][columna] = 'O'
+    for fila in laberinto:
+        print(' '.join(fila))
+    print(pasos_totales)
 else:
-    for row, col in path:
-        labyrinth[row][col] = 'O'
-    for row in labyrinth:
-        print(' '.join(row))
-    print(total_steps)
+    print(-1)
+
+
+
+
+
+# Tercer laberinto
+laberinto3 = [
+    ['.', '.', '.'],
+    ['.', '.', '.'],
+    ['.', '.', '.'],
+]
+
+inicio3 = (0, 1)
+fin3 = (3, 2)
+
+camino3, pasos_totales3 = recorrer_laberinto(laberinto3, inicio3, fin3)
+
+if camino3:
+    print("Laberinto 3 - Se encontró un camino:")
+    for fila, columna in camino2:
+        laberinto3[fila][columna] = 'O'
+    for fila in laberinto3:
+        print(' '.join(fila))
+    print(pasos_totales3)
+else:
+    print(-1)
+
+
+# Cuarto laberinto
+laberinto4 = [
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '#', '.', '.', '.', '.', '#', '.', '.', '.'],
+    ['.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '#', '.', '.', '.', '#', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '#', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+]
+
+inicio4 = (0, 1)
+fin4 = (8, 9)
+
+camino4, pasos_totales4 = recorrer_laberinto(laberinto4, inicio4, fin4)
+
+if camino4:
+    print("Laberinto 4 - Se encontró un camino:")
+    for fila in laberinto4:
+        print(' '.join(fila))
+    print(pasos_totales4)
+else:
+    print(-1)
+    
