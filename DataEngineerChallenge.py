@@ -29,7 +29,7 @@ def traverse_labyrinth(labyrinth, start, end):
 
         return is_valid(row - 1, column) and is_valid(row + 1, column) and row - 1 >= 0
 
-    def reconstruct_path(parents, current):
+    def reconstruct_path(parents, current):ss
         path = []
         visited = set()  # Conjunto para realizar un seguimiento de los nodos visitados
         while current in parents:
