@@ -12,13 +12,6 @@ The initial position of the rod is horizontally oriented, with its left cell at 
 
 If it is impossible to reach the goal, the output should be -1.
 
-## Function Signature
-
-```python
-def solution(labyrinth: List[List[str]]) -> int:
-    pass
-```
-
 ## Input
 
 - `labyrinth`: A rectangular array of characters representing the labyrinth. Each element `labyrinth[i][j]` can be either '.' if the corresponding cell is empty or '#' if the corresponding cell is blocked.
