@@ -3,6 +3,7 @@ def traverse_labyrinth(labyrinth, start, end):
     rows = len(labyrinth)
     columns = len(labyrinth[0])
     orientation = True
+    rotations=0
 
     # List of directions to move in the labyrinth (up, down, left, right)
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -48,8 +49,7 @@ def traverse_labyrinth(labyrinth, start, end):
         if current == end:
             # Path has been found
             path = reconstruct_path(parents, current)
-            total_steps = g_scores[current]
-            print(path)
+            total_steps = g_scores[current]+rotations
             return path, total_steps
 
         try:
@@ -85,8 +85,10 @@ def traverse_labyrinth(labyrinth, start, end):
                     open_set.append((f_scores[rotate_pos], rotate_pos))
 
     # No path has been found
-    return [], -1
+    return [], -1, rotations
 
+print()
+print("Labyrinth 1 ")
 # Example usage
 labyrinth = [
     ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
@@ -96,21 +98,40 @@ labyrinth = [
     ['.', '#', '.', '.', '.', '.', '.', '#', '.']
 ]
 
-start = (0, 1)
+start = (0,0)
 end = (3, 8)
 
 path, total_steps = traverse_labyrinth(labyrinth, start, end)
-
+print(path)
 if path:
-    print("A path has been found:")
-    for row, column in path:
-        labyrinth[row][column] = 'O'
-    for row in labyrinth:
-        print(' '.join(row))
     print(total_steps)
 else:
     print(-1)
 
+'''
+print()
+print("Labyrinth 2 ")
+# Example usage
+labyrinth2 = [
+    ['.', '.', '.', '.', '.', '.', '.', '.', '.'],
+    ['#', '.', '.', '.', '#', '.', '.', '#', '.'],
+    ['.', '.', '.', '.', '#', '.', '.', '.', '.'],
+    ['.', '#', '.', '.', '.', '.', '.', '#', '.'],
+    ['.', '#', '.', '.', '.', '.', '.', '#', '.']
+]
+
+start2 = (0,0)
+end2 = (3, 8)
+
+path2, total_steps2 = traverse_labyrinth(labyrinth2, start2, end2)
+
+if path2:
+    print(total_steps2)
+else:
+    print(-1)
+
+print()
+print("Labyrinth 3 ")
 # Third labyrinth
 labyrinth3 = [
     ['.', '.', '.'],
@@ -124,15 +145,13 @@ end3 = (2, 3)
 path3, total_steps3 = traverse_labyrinth(labyrinth3, start3, end3)
 
 if path3:
-    print("Labyrinth 3 - A path has been found:")
-    for row, column in path3:
-        labyrinth3[row][column] = 'O'
-    for row in labyrinth3:
-        print(' '.join(row))
     print(total_steps3)
 else:
     print(-1)
 
+'''
+print()
+print("Labyrinth 4 ")
 # Fourth labyrinth
 labyrinth4 = [
     ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
@@ -151,11 +170,8 @@ start4 = (0, 1)
 end4 = (8, 9)
 
 path4, total_steps4 = traverse_labyrinth(labyrinth4, start4, end4)
-
+print(path4)
 if path4:
-    print("Labyrinth 4 - A path has been found:")
-    for row in labyrinth4:
-        print(' '.join(row))
     print(total_steps4)
 else:
     print(-1)
