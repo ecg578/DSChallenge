@@ -3,7 +3,6 @@ def traverse_labyrinth(labyrinth, start, end):
     rows = len(labyrinth)
     columns = len(labyrinth[0])
     orientation = True
-    rotations=0
 
     # List of directions to move in the labyrinth (up, down, left, right)
     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -40,16 +39,6 @@ def traverse_labyrinth(labyrinth, start, end):
             path.append(current)
             current = parents[current]
         return list(reversed(path))
-
-    # def reconstruct_path(parents, current):
-    #     path = []
-    #     print(parents)
-    #     print(parents[current])
-    #     while current in parents:
-    #         print(current)
-    #         path.append(current)
-    #         current = parents[current]
-    #     return list(reversed(path))
 
     # Initialization
     g_scores = {start: 0}
@@ -99,9 +88,6 @@ def traverse_labyrinth(labyrinth, start, end):
                 f_scores[rotate_pos] = g_score_rotate + heuristic_distance(rotate_pos)
                 if (f_scores[rotate_pos], rotate_pos) not in open_set:
                     open_set.append((f_scores[rotate_pos], rotate_pos))
-        
-        # if not open_set:
-        #     break
 
     # No path has been found
     return [], -1
@@ -165,7 +151,6 @@ end3 = (1,2)
 
 path3, total_steps3 = traverse_labyrinth(labyrinth3, start3, end3)
 print(path3)
-print(total_steps3)
 if path3:
     print(total_steps3)
 else:
