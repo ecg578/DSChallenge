@@ -49,13 +49,15 @@ def traverse_labyrinth(labyrinth, start, end):
         if current == end:
             # Path has been found
             path = reconstruct_path(parents, current)
-            total_steps = g_scores[current]+rotations
+            total_steps = g_scores[current]
             return path, total_steps
 
-        try:
-            open_set.remove((f_scores[current], current))
-        except KeyError:
+        to_remove = (f_scores[current], current)
+        if to_remove in open_set:
+            open_set.remove(to_remove)
+        else:
             return [], -1
+
 
         for direction in directions:
             new_row = current[0] + direction[0]
@@ -108,7 +110,7 @@ if path:
 else:
     print(-1)
 
-'''
+
 print()
 print("Labyrinth 2 ")
 # Example usage
@@ -130,6 +132,8 @@ if path2:
 else:
     print(-1)
 
+
+
 print()
 print("Labyrinth 3 ")
 # Third labyrinth
@@ -140,16 +144,16 @@ labyrinth3 = [
 ]
 
 start3 = (0, 1)
-end3 = (2, 3)
+end3 = (1, 2)
 
 path3, total_steps3 = traverse_labyrinth(labyrinth3, start3, end3)
-
+print(path3)
 if path3:
     print(total_steps3)
 else:
     print(-1)
 
-'''
+
 print()
 print("Labyrinth 4 ")
 # Fourth labyrinth
@@ -175,3 +179,5 @@ if path4:
     print(total_steps4)
 else:
     print(-1)
+
+
